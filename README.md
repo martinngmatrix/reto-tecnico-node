@@ -1,72 +1,126 @@
-<!--
-title: 'AWS NodeJS Example'
-description: 'This template demonstrates how to deploy a NodeJS function running on AWS Lambda using the traditional Serverless Framework.'
-layout: Doc
-framework: v3
-platform: AWS
-language: nodeJS
-priority: 1
-authorLink: 'https://github.com/serverless'
-authorName: 'Serverless, inc.'
-authorAvatar: 'https://avatars1.githubusercontent.com/u/13742415?s=200&v=4'
--->
+# Documentación de uso
 
+En este documento se muestra cómo desplegar el reto técnico con NodeJS utilizando el Framework Serverless.
 
-# Serverless Framework AWS NodeJS Example
+## Uso
 
-This template demonstrates how to deploy a NodeJS function running on AWS Lambda using the traditional Serverless Framework. The deployed function does not include any event definitions as well as any kind of persistence (database). For more advanced configurations check out the [examples repo](https://github.com/serverless/examples/) which includes integrations with SQS, DynamoDB or examples of functions that are triggered in `cron`-like manner. For details about configuration of specific `events`, please refer to our [documentation](https://www.serverless.com/framework/docs/providers/aws/events/).
+### Instalación
 
-## Usage
+Para instalar las dependencias necesarias, sigue estos pasos:
 
-### Deployment
+1. **Instalar Node.js**: Asegúrate de tener Node.js v18 instalado en tu máquina. Puedes descargarlo desde [nodejs.org](https://nodejs.org/).
 
-In order to deploy the example, you need to run the following command:
+2. **Instalar Serverless Framework**: Si no tienes el Serverless Framework instalado, instálalo globalmente usando npm:
+
+   ```bash
+   npm install -g serverless
+
+### Despliegue
+
+Para desplegar el ejemplo, necesitas ejecutar el siguiente comando:
 
 ```
 $ serverless deploy
 ```
 
-After running deploy, you should see output similar to:
+Después de ejecutar el despliegue, deberías ver una salida similar a:
 
 ```bash
-Deploying aws-node-project to stage dev (us-east-1)
+Deploying reto-tecnico to stage dev (us-east-1)
 
-✔ Service deployed to stack aws-node-project-dev (112s)
+✔ Service deployed to stack reto-tecnico-dev (112s)
 
 functions:
-  hello: aws-node-project-dev-hello (1.5 kB)
+  cmd: reto-tecnico-dev-cmd (38 MB)
+  qry: reto-tecnico-dev-qry (38 MB)
+  swaggerUI: reto-tecnico-dev-swagger-ui (38 MB)
+  swaggerJSON: reto-tecnico-dev-swagger-json (38 MB)
 ```
 
-### Invocation
+### Invocación
 
-After successful deployment, you can invoke the deployed function by using the following command:
+Después de un despliegue exitoso, puedes invocar la función desplegada utilizando el siguiente comando:
 
 ```bash
-serverless invoke --function hello
+serverless invoke --function qry
 ```
 
-Which should result in response similar to the following:
+### Despliegue Local
+
+Puedes invocar tu función localmente usando el siguiente comando:
+
+```bash
+serverless invoke local --function qry
+```
+
+## Uso del API
+
+Este proyecto expone un API REST con dos endpoints principales:
+
+### **1. POST /**
+
+- **Descripción**: Permite guardar un personaje en la base de datos DynamoDB.
+- **Cuerpo de la solicitud**: El cuerpo debe cumplir con la estructura de la interfaz `People`, que tiene los siguientes campos:
 
 ```json
 {
-    "statusCode": 200,
-    "body": "{\n  \"message\": \"Go Serverless v3.0! Your function executed successfully!\",\n  \"input\": {}\n}"
+  "name": "string",
+  "height": "string",
+  "mass": "string",
+  "hair_color": "string",
+  "skin_color": "string",
+  "eye_color": "string",
+  "birth_year": "string",
+  "gender": "string",
+  "homeworld": "string",
+  "films": ["string"],
+  "species": ["string"],
+  "vehicles": ["string"],
+  "starships": ["string"],
+  "created": "string",
+  "edited": "string",
+  "url": "string"
+}
+```
+- **Respuesta Esperada**:
+```json
+{ 
+  "response": true 
 }
 ```
 
-### Local development
+### **2. GET /**
 
-You can invoke your function locally by using the following command:
+- **Descripción**: Recupera todos los personajes almacenados en la tabla de DynamoDB y del API de Star Wars.
+- **Ejemplo de solicitud**:
 
 ```bash
-serverless invoke local --function hello
+curl https://{API_ID}.execute-api.{REGION}.amazonaws.com/dev/
 ```
 
-Which should result in response similar to the following:
-
-```
+- **Respuesta Esperada**:
+```json
 {
-    "statusCode": 200,
-    "body": "{\n  \"message\": \"Go Serverless v3.0! Your function executed successfully!\",\n  \"input\": \"\"\n}"
+  "statusCode": 200,
+  "data": [
+    {
+      "name": "Luke Skywalker",
+      "height": "172",
+      "mass": "77",
+      "hair_color": "blond",
+      "skin_color": "fair",
+      "eye_color": "blue",
+      "birth_year": "19BBY",
+      "gender": "male",
+      "homeworld": "Tatooine",
+      "films": ["A New Hope", "The Empire Strikes Back"],
+      "species": [],
+      "vehicles": ["Snowspeeder"],
+      "starships": ["X-Wing"],
+      "created": "2024-01-01T00:00:00Z",
+      "edited": "2024-01-01T00:00:00Z",
+      "url": "https://swapi.dev/api/people/1/"
+    }
+  ]
 }
 ```
